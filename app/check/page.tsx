@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import EmailCapture from "../components/EmailCapture";
 
 type RuleRow = {
   jurisdiction_name: string;
@@ -33,7 +34,7 @@ function statusLabel(status?: string) {
 
 export default function CheckPage() {
   const [query, setQuery] = useState("San Diego");
-  const [resolvedCity, setResolvedCity] = useState(""); // IMPORTANT
+  const [resolvedCity, setResolvedCity] = useState("");
   const [rows, setRows] = useState<RuleRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -50,8 +51,14 @@ export default function CheckPage() {
       if (!geoRes.ok) throw new Error(`Geocode failed (${geoRes.status})`);
       const geo = await geoRes.json();
 
-      // if user typed a city, geo.city might be null sometimes — fallback to query
-      const city = (geo?.city || query || "").trim();
+      // Fallback city detection
+      const city = (
+        geo?.city ||
+        geo?.fullPlaceName?.split(",")?.[0] ||
+        query ||
+        ""
+      ).trim();
+
       setResolvedCity(city);
 
       // 2) Rules: city -> rows
@@ -61,7 +68,6 @@ export default function CheckPage() {
       if (!rulesRes.ok) throw new Error(`Rules failed (${rulesRes.status})`);
       const rulesData = await rulesRes.json();
 
-      // Ensure rows is always an array
       const list: RuleRow[] = Array.isArray(rulesData?.rows)
         ? rulesData.rows
         : Array.isArray(rulesData)
@@ -81,7 +87,6 @@ export default function CheckPage() {
   const match = useMemo(() => {
     if (!rows || rows.length === 0) return null;
 
-    // IMPORTANT: match based on resolvedCity (what API uses), not raw query
     const key = normalize(resolvedCity || query);
     if (!key) return null;
 
@@ -94,9 +99,7 @@ export default function CheckPage() {
     <div className="min-h-screen bg-white text-gray-900">
       <div className="mx-auto max-w-2xl px-4 py-10">
         <h1 className="text-3xl font-semibold">STR Legality Checker</h1>
-        <p className="mt-2 text-gray-600">
-          V1: type an address or city — we auto-detect the city.
-        </p>
+        <p className="mt-2 text-gray-600">V1: type an address or city — we auto-detect the city.</p>
 
         <div className="mt-6 rounded-xl border p-4">
           <label className="block text-sm font-medium text-gray-700">Address or City</label>
@@ -133,8 +136,7 @@ export default function CheckPage() {
 
           {!loading && rows && rows.length > 0 && !match && (
             <div className="rounded-lg border bg-gray-50 p-4">
-              No match found for{" "}
-              <span className="font-semibold">{resolvedCity || query}</span>.
+              No match found for <span className="font-semibold">{resolvedCity || query}</span>.
               <div className="mt-2 text-sm text-gray-600">
                 Current inventory: {rows.map((r) => r.jurisdiction_name).join(", ")}
               </div>
@@ -142,35 +144,57 @@ export default function CheckPage() {
           )}
 
           {!loading && match && (
-            <div className="rounded-xl border p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold">{match.jurisdiction_name}</h2>
-                  <div className="mt-1 text-sm text-gray-600">
-                    Last verified: {match.last_verified || "—"}
+            <>
+              <div className="rounded-xl border p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-semibold">{match.jurisdiction_name}</h2>
+                    <div className="mt-1 text-sm text-gray-600">
+                      Last verified: {match.last_verified || "—"}
+                    </div>
                   </div>
+                  <span className="rounded-full border px-3 py-1 text-sm font-medium">{label}</span>
                 </div>
-                <span className="rounded-full border px-3 py-1 text-sm font-medium">
-                  {label}
-                </span>
+
+                <div className="mt-4 grid gap-3 text-sm">
+                  <div>
+                    <span className="font-medium">Permit required:</span> {match.permit_required || "—"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Primary residence required:</span>{" "}
+                    {match.primary_residence_required || "—"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Min stay nights:</span> {match.min_stay_nights || "—"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Caps / limits:</span> {match.cap_or_limit || "—"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Taxes:</span> {match.taxes || "—"}
+                  </div>
+                  <div>
+                    <span className="font-medium">Notes:</span> {match.notes || "—"}
+                  </div>
+
+                  {match.source_url && (
+                    <div>
+                      <a
+                        className="text-blue-600 underline"
+                        href={match.source_url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Official source
+                      </a>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="mt-4 grid gap-3 text-sm">
-                <div><span className="font-medium">Permit required:</span> {match.permit_required || "—"}</div>
-                <div><span className="font-medium">Primary residence required:</span> {match.primary_residence_required || "—"}</div>
-                <div><span className="font-medium">Min stay nights:</span> {match.min_stay_nights || "—"}</div>
-                <div><span className="font-medium">Caps / limits:</span> {match.cap_or_limit || "—"}</div>
-                <div><span className="font-medium">Taxes:</span> {match.taxes || "—"}</div>
-                <div><span className="font-medium">Notes:</span> {match.notes || "—"}</div>
-                {match.source_url && (
-                  <div>
-                    <a className="text-blue-600 underline" href={match.source_url} target="_blank" rel="noreferrer">
-                      Official source
-                    </a>
-                  </div>
-                )}
-              </div>
-            </div>
+              {/* ✅ EMAIL CAPTURE GOES DIRECTLY UNDER THE RESULTS CARD */}
+              {resolvedCity && <EmailCapture city={resolvedCity} />}
+            </>
           )}
 
           {!loading && rows && rows.length === 0 && (
