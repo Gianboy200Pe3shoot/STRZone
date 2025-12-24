@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const gasUrl = process.env.GAS_WEBAPP_URL; // use ONE env var
+    const gasUrl = process.env.GAS_WEBAPP_URL;
     if (!gasUrl) {
       return NextResponse.json(
         { ok: false, error: "Missing GAS_WEBAPP_URL in Vercel env vars" },
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
 
     const resp = await fetch(gasUrl, {
       method: "POST",
-      redirect: "manual", // IMPORTANT
+      redirect: "manual",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: body.email,
@@ -26,16 +27,17 @@ export async function POST(req: Request) {
       }),
     });
 
-    // Apps Script often returns 302 after successfully running doPost
+    // ✅ SUCCESS PATH
     if (resp.status === 302 || resp.ok) {
-  return NextResponse.json({
-  ok: true,
-  forwarded: true,
-  gasStatus: resp.status,
-  marker: "SUBSCRIBE_FORWARDING_V2",
-});
+      return NextResponse.json({
+        ok: true,
+        forwarded: true,
+        gasStatus: resp.status,
+        marker: "SUBSCRIBE_FORWARDING_V2",
+      });
+    }
 
-
+    // ✅ ERROR PATH
     const text = await resp.text().catch(() => "");
     return NextResponse.json(
       { ok: false, forwarded: true, gasStatus: resp.status, text },
