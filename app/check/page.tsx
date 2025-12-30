@@ -134,12 +134,12 @@ export default function CheckPage() {
               STR Zone • Legality Checker
             </p>
             <h1 className="mt-3 text-3xl font-semibold md:text-4xl text-[#1a202c]">
-              Outsmart city STR rules with fast legality checks.
+              Instantly check if your Airbnb is legal — before you get fined.
             </h1>
             <p className="mt-3 text-sm md:text-base text-gray-600">
-              Type any address or city. We auto-detect the jurisdiction and
-              show permit requirements, primary-residence rules, caps, and tax
-              notes so you can stay legal and avoid surprises.
+              Type any address or city and see whether short-term rentals are
+              allowed, what permits you need, and which restrictions apply so
+              you don&apos;t risk shutdowns, surprise fines, or delisting.
             </p>
 
             {/* search box */}
@@ -158,7 +158,7 @@ export default function CheckPage() {
                   onClick={loadRules}
                   className="rounded-xl bg-[#3b82f6] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition"
                 >
-                  Check
+                  Check your city (free)
                 </button>
               </div>
 
@@ -175,16 +175,16 @@ export default function CheckPage() {
             {/* feature pills */}
             <div className="mt-4 flex flex-wrap gap-2 text-xs">
               <span className="rounded-full bg-blue-50 px-3 py-1 text-[#1a202c]">
-                STR regulations
+                STR allowed / banned status
               </span>
               <span className="rounded-full bg-blue-50 px-3 py-1 text-[#1a202c]">
-                Permit requirements
+                Permit + registration rules
               </span>
               <span className="rounded-full bg-blue-50 px-3 py-1 text-[#1a202c]">
-                Min-stay & caps
+                Min-stay limits & caps
               </span>
               <span className="rounded-full bg-blue-50 px-3 py-1 text-[#1a202c]">
-                Tax & notes
+                Taxes & official sources
               </span>
             </div>
           </section>
@@ -193,7 +193,7 @@ export default function CheckPage() {
           <section className="hidden md:block">
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <p className="text-sm font-semibold text-[#1a202c]">
-                Turn checks into a real compliance system
+                Turn quick checks into a real STR compliance system.
               </p>
               <ul className="mt-3 space-y-2 text-sm text-gray-600">
                 <li>• Save your watched cities in one place</li>
@@ -205,23 +205,60 @@ export default function CheckPage() {
                 href="/pricing"
                 className="mt-4 inline-flex items-center justify-center rounded-xl bg-[#3b82f6] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition"
               >
-                View pricing
+                View PRO plans
               </Link>
             </div>
           </section>
         </div>
 
+        {/* Why this matters */}
+        <section className="mt-10 text-sm text-gray-600">
+          <h2 className="text-base font-semibold text-[#1a202c]">
+            Why this matters for hosts and investors
+          </h2>
+          <p className="mt-2 max-w-2xl">
+            Cities are cracking down on illegal short-term rentals. Many hosts
+            don&apos;t realize their city requires permits, primary-residence
+            rules, or strict caps until they receive a notice or their listing
+            gets removed. STR Zone helps you understand the rules <span className="font-semibold">before</span>{" "}
+            you buy or list, so you can protect your cashflow and avoid
+            expensive surprises.
+          </p>
+        </section>
+
         {/* How it works */}
-        <section id="how-it-works" className="mt-10 text-sm text-gray-600">
+        <section id="how-it-works" className="mt-8 text-sm text-gray-600">
           <h2 className="text-base font-semibold text-[#1a202c]">
             How STR Zone works
           </h2>
-          <p className="mt-2 max-w-2xl">
-            We maintain a structured rules sheet with STR regulations by
-            jurisdiction. When you search, we geocode your query to a city,
-            match it against our inventory, and show a summary of status,
-            permits, caps, and notes pulled from official sources.
-          </p>
+          <div className="mt-3 grid gap-3 md:grid-cols-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                1. Search any city or address
+              </p>
+              <p className="mt-1">
+                Type an address or city and we auto-detect the jurisdiction.
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                2. We map it to STR rules
+              </p>
+              <p className="mt-1">
+                We match it against our rules database and pull status, permits,
+                caps, and notes.
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                3. You get a clear, actionable summary
+              </p>
+              <p className="mt-1">
+                See what&apos;s allowed, what&apos;s required, and click through
+                to the official source so you can stay compliant.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Results */}
@@ -307,19 +344,22 @@ export default function CheckPage() {
                   </div>
                 </div>
 
+                {/* Your existing email capture – just make sure its copy matches our promise */}
                 <EmailCapture city={resolvedCity || match.jurisdiction_name} />
 
+                {/* PRO upsell under results */}
                 <p className="mt-4 text-xs text-gray-600">
-                  Need ongoing alerts and compliance checklists for{" "}
+                  Manage more than one property or market? Get rule-change
+                  alerts and permit checklists for{" "}
                   <span className="font-semibold">
                     {resolvedCity || match.jurisdiction_name}
-                  </span>
-                  ?{" "}
+                  </span>{" "}
+                  and other cities with{" "}
                   <Link
                     href="/pricing"
                     className="font-semibold text-[#3b82f6] underline"
                   >
-                    See STR Zone plans →
+                    STR Zone PRO →
                   </Link>
                 </p>
               </>
