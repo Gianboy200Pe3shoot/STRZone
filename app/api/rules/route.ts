@@ -1,4 +1,10 @@
 import { NextResponse } from "next/server";
+export async function POST() {
+  return NextResponse.json(
+    { error: "Not Found" },
+    { status: 404 }
+  );
+}
 
 type RuleRow = {
   jurisdiction_name: string;
@@ -138,18 +144,17 @@ export async function GET(req: Request) {
     }));
 
     // Filter by city (exact match)
-    const filtered = qCity
-      ? rows.filter((r) => normalize(r.jurisdiction_name) === qCity)
-      : rows;
+      const rowsOut = qCity
+  ? rows.filter((r) => normalize(r.jurisdiction_name) === qCity)
+  : rows;
 
-    // ALWAYS return rows as an array
-    const rowsOut = filtered;
+
 
     return NextResponse.json({
-      rows: rowsOut,
-      total: rows.length,
-      city: cityRaw || null,
-    });
+  rows: rowsOut,          // ALWAYS an array
+  total: rowsOut.length, // matches returned rows
+  city: cityRaw|| null,
+});
   } catch (e: any) {
     return NextResponse.json(
       { error: e?.message ?? "Unknown error" },
