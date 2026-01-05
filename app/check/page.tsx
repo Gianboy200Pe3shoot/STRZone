@@ -112,9 +112,12 @@ export default function CheckPage() {
             </span>
           </Link>
 
-          <nav className="flex items-center gap-6 text-sm text-gray-700">
+             <nav className="flex items-center gap-6 text-sm text-gray-700">
             <Link href="/check" className="hover:text-[#1a202c]">
               Checker
+            </Link>
+            <Link href="/compare" className="hover:text-[#1a202c]">
+              Compare
             </Link>
             <Link href="/pricing" className="hover:text-[#1a202c]">
               Pricing
@@ -134,7 +137,7 @@ export default function CheckPage() {
               STR Zone • Legality Checker
             </p>
             <h1 className="mt-3 text-3xl font-semibold md:text-4xl text-[#1a202c]">
-              Instantly check if your Airbnb is legal — before you get fined.
+              Instantly check if your Airbnb is legal|before you get fined.
             </h1>
             <p className="mt-3 text-sm md:text-base text-gray-600">
               Type any address or city and see whether short-term rentals are
