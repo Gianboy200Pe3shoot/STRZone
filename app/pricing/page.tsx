@@ -30,14 +30,16 @@ export default function PricingPage() {
             </div>
 
             <ul className="mt-4 space-y-2 text-sm text-gray-700">
+              <li>• <strong>Unlimited</strong> STR regulation checks</li>
               <li>• STR status + permit requirements</li>
               <li>• Min-stay, caps, and tax notes</li>
+              <li>• Compare up to 5 cities side-by-side</li>
               <li>• Access everywhere</li>
             </ul>
 
             <a
               href="https://buy.stripe.com/9B68wI22R1Ab3yxb4w5os01"
-              className="mt-6 w-full rounded-xl bg-[#3b82f6] px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb]"
+              className="mt-6 block w-full rounded-xl bg-[#3b82f6] px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb]"
             >
               Get Basic
             </a>
@@ -48,7 +50,7 @@ export default function PricingPage() {
           </div>
 
           {/* Pro */}
-          <div className="rounded-2xl border border-[#3b82f6] bg-white p-6 shadow-md">
+          <div className="rounded-2xl border-2 border-[#3b82f6] bg-white p-6 shadow-md">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Pro Compliance</h2>
               <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-[#3b82f6]">
@@ -66,16 +68,16 @@ export default function PricingPage() {
             </div>
 
             <ul className="mt-4 space-y-2 text-sm text-gray-700">
-              <li>• Everything in Basic</li>
-              <li>• Save multiple cities</li>
-              <li>• Rule-change alerts</li>
-              <li>• Permit checklists</li>
-              <li>• Priority support</li>
+              <li>• <strong>Everything in Basic</strong></li>
+              <li>• Save & monitor your cities</li>
+              <li>• Email alerts when rules change</li>
+              <li>• Downloadable permit checklists</li>
+              <li>• Priority email support</li>
             </ul>
 
             <a
               href="https://buy.stripe.com/8x2eV65f32Efb0Z3C45os02"
-              className="mt-6 w-full rounded-xl bg-[#1a202c] px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-black"
+              className="mt-6 block w-full rounded-xl bg-[#1a202c] px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-black"
             >
               Go Pro
             </a>
@@ -84,6 +86,13 @@ export default function PricingPage() {
               No contracts. Cancel anytime.
             </p>
           </div>
+        </div>
+
+        {/* Trust Badge */}
+        <div className="mt-8 rounded-lg bg-blue-50 border border-blue-100 p-4 text-center">
+          <p className="text-sm text-gray-700">
+            🎯 <strong>Value Guarantee:</strong> If our data helps you avoid even one compliance mistake or fine, you've saved 10-100x what you paid.
+          </p>
         </div>
       </div>
     </main>

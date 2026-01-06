@@ -1,7 +1,9 @@
+// app/check/page.tsx - UPDATED with Save City feature
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
+import { useSavedCities } from "../hooks/useSavedCities";
 import EmailCapture from "../components/EmailCapture";
 
 type RuleRow = {
@@ -14,6 +16,7 @@ type RuleRow = {
   cap_or_limit?: string;
   taxes?: string;
   notes?: string;
+  permit_checklist?: string; // NEW FIELD
   source_url?: string;
   last_verified?: string;
 };
@@ -40,19 +43,18 @@ export default function CheckPage() {
   const [rows, setRows] = useState<RuleRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  
-  // NEW: Paywall state
   const [checkCount, setCheckCount] = useState(0);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
-  // NEW: Load check count on mount
+  const { saveCity, isCitySaved, savedCities } = useSavedCities();
+
   useEffect(() => {
     const count = parseInt(localStorage.getItem('checkCount') || '0');
     setCheckCount(count);
   }, []);
 
   async function loadRules() {
-    // NEW: Check if user has exceeded free limit
     if (checkCount >= 3) {
       setShowPaywall(true);
       return;
@@ -93,7 +95,6 @@ export default function CheckPage() {
 
       setRows(list);
 
-      // NEW: Increment check count after successful load
       const newCount = checkCount + 1;
       setCheckCount(newCount);
       localStorage.setItem('checkCount', newCount.toString());
@@ -109,20 +110,32 @@ export default function CheckPage() {
 
   const match = useMemo(() => {
     if (!rows || rows.length === 0) return null;
-
     const key = normalize(resolvedCity || query);
     if (!key) return null;
-
-    return (
-      rows.find((r) => normalize(r.jurisdiction_name) === key) || null
-    );
+    return rows.find((r) => normalize(r.jurisdiction_name) === key) || null;
   }, [rows, query, resolvedCity]);
 
   const label = statusLabel(match?.str_status);
+  const cityName = resolvedCity || match?.jurisdiction_name || "";
+  const isSaved = isCitySaved(cityName);
+
+  const handleSaveCity = () => {
+    if (!cityName || !match) return;
+    
+    const success = saveCity({
+      name: cityName,
+      status: label,
+      savedAt: new Date().toISOString(),
+    });
+
+    if (success) {
+      setShowSaveSuccess(true);
+      setTimeout(() => setShowSaveSuccess(false), 3000);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f3f4f6] to-white text-[#1a202c]">
-      {/* Top nav */}
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <Link href="/check" className="flex items-center gap-2">
@@ -141,6 +154,14 @@ export default function CheckPage() {
             <Link href="/compare" className="hover:text-[#1a202c]">
               Compare
             </Link>
+            <Link href="/my-cities" className="hover:text-[#1a202c] relative">
+              My Cities
+              {savedCities.length > 0 && (
+                <span className="absolute -top-1 -right-2 bg-[#3b82f6] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {savedCities.length}
+                </span>
+              )}
+            </Link>
             <Link href="/pricing" className="hover:text-[#1a202c]">
               Pricing
             </Link>
@@ -151,8 +172,18 @@ export default function CheckPage() {
         </div>
       </header>
 
+      {showSaveSuccess && (
+        <div className="fixed top-20 right-4 z-50 rounded-xl bg-green-50 border border-green-200 px-4 py-3 shadow-lg animate-in slide-in-from-top">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-sm font-medium text-green-800">City saved successfully!</span>
+          </div>
+        </div>
+      )}
+
       <main className="mx-auto max-w-5xl px-4 py-10">
-        {/* HERO + checker */}
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <section>
             <p className="text-xs font-semibold uppercase tracking-wide text-[#3b82f6]">
@@ -167,13 +198,11 @@ export default function CheckPage() {
               you don&apos;t risk shutdowns, surprise fines, or delisting.
             </p>
 
-            {/* search box */}
             <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Address or City
                 </label>
-                {/* NEW: Free checks counter */}
                 <span className="text-xs text-gray-500">
                   {checkCount}/3 free checks used
                 </span>
@@ -182,14 +211,15 @@ export default function CheckPage() {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && loadRules()}
                   className="w-full rounded-xl border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#3b82f6]"
                   placeholder="San Diego"
                 />
                 <button
                   onClick={loadRules}
-                  className="rounded-xl bg-[#3b82f6] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition"
+                  className="rounded-xl bg-[#3b82f6] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition whitespace-nowrap"
                 >
-                  Check your city {checkCount < 3 ? "(free)" : ""}
+                  Check City {checkCount < 3 ? "(free)" : ""}
                 </button>
               </div>
 
@@ -203,7 +233,6 @@ export default function CheckPage() {
               )}
             </div>
 
-            {/* feature pills */}
             <div className="mt-4 flex flex-wrap gap-2 text-xs">
               <span className="rounded-full bg-blue-50 px-3 py-1 text-[#1a202c]">
                 STR allowed / banned status
@@ -220,7 +249,6 @@ export default function CheckPage() {
             </div>
           </section>
 
-          {/* Right column: upgrade card */}
           <section className="hidden md:block">
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <p className="text-sm font-semibold text-[#1a202c]">
@@ -243,7 +271,6 @@ export default function CheckPage() {
           </section>
         </div>
 
-        {/* NEW: Paywall Modal */}
         {showPaywall && (
           <section className="mt-8">
             <div className="rounded-2xl border-2 border-[#3b82f6] bg-blue-50 p-8 shadow-lg">
@@ -255,8 +282,8 @@ export default function CheckPage() {
               </p>
               <ul className="mt-3 space-y-2 text-sm text-gray-700">
                 <li>✓ Unlimited city checks</li>
-                <li>✓ Compare up to 3 cities side-by-side</li>
-                <li>✓ Save 5 watched cities</li>
+                <li>✓ Compare up to 5 cities side-by-side</li>
+                <li>✓ Save unlimited cities</li>
                 <li>✓ Full regulation details</li>
               </ul>
               <div className="mt-6 flex gap-3">
@@ -277,7 +304,6 @@ export default function CheckPage() {
           </section>
         )}
 
-        {/* Why this matters */}
         <section className="mt-10 text-sm text-gray-600">
           <h2 className="text-base font-semibold text-[#1a202c]">
             Why this matters for hosts and investors
@@ -292,7 +318,6 @@ export default function CheckPage() {
           </p>
         </section>
 
-        {/* How it works */}
         <section id="how-it-works" className="mt-8 text-sm text-gray-600">
           <h2 className="text-base font-semibold text-[#1a202c]">
             How STR Zone works
@@ -327,7 +352,6 @@ export default function CheckPage() {
           </div>
         </section>
 
-        {/* Results */}
         <section className="mt-8">
           <div className="max-w-2xl">
             {loading && <div className="text-gray-600">Loading…</div>}
@@ -364,9 +388,22 @@ export default function CheckPage() {
                         Last verified: {match.last_verified || "—"}
                       </div>
                     </div>
-                    <span className="inline-flex items-center rounded-full border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700">
-                      {label}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center rounded-full border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700">
+                        {label}
+                      </span>
+                      <button
+                        onClick={handleSaveCity}
+                        disabled={isSaved}
+                        className={`rounded-xl px-4 py-1.5 text-xs font-semibold transition ${
+                          isSaved
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-[#3b82f6] text-white hover:bg-[#2563eb]'
+                        }`}
+                      >
+                        {isSaved ? '✓ Saved' : 'Save City'}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="mt-4 grid gap-3 text-sm text-gray-700">
@@ -397,6 +434,20 @@ export default function CheckPage() {
                       {match.notes || "—"}
                     </div>
 
+                    {match.permit_checklist && (
+                      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-4">
+                        <h3 className="text-sm font-semibold text-[#1a202c] flex items-center gap-2">
+                          <svg className="w-4 h-4 text-[#3b82f6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                          Permit Checklist
+                        </h3>
+                        <div className="mt-2 text-sm text-gray-700 whitespace-pre-line">
+                          {match.permit_checklist}
+                        </div>
+                      </div>
+                    )}
+
                     {match.source_url && (
                       <a
                         className="text-sm text-[#3b82f6] underline"
@@ -412,7 +463,6 @@ export default function CheckPage() {
 
                 <EmailCapture city={resolvedCity || match.jurisdiction_name} />
 
-                {/* PRO upsell under results */}
                 <p className="mt-4 text-xs text-gray-600">
                   Manage more than one property or market? Get rule-change
                   alerts and permit checklists for{" "}
@@ -441,4 +491,4 @@ export default function CheckPage() {
       </main>
     </div>
   );
-} 
+}
