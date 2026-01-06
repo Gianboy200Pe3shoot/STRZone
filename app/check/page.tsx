@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import EmailCapture from "../components/EmailCapture";
 
@@ -40,8 +40,24 @@ export default function CheckPage() {
   const [rows, setRows] = useState<RuleRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  
+  // NEW: Paywall state
+  const [checkCount, setCheckCount] = useState(0);
+  const [showPaywall, setShowPaywall] = useState(false);
+
+  // NEW: Load check count on mount
+  useEffect(() => {
+    const count = parseInt(localStorage.getItem('checkCount') || '0');
+    setCheckCount(count);
+  }, []);
 
   async function loadRules() {
+    // NEW: Check if user has exceeded free limit
+    if (checkCount >= 3) {
+      setShowPaywall(true);
+      return;
+    }
+
     setLoading(true);
     setErr(null);
 
@@ -76,6 +92,12 @@ export default function CheckPage() {
         : [];
 
       setRows(list);
+
+      // NEW: Increment check count after successful load
+      const newCount = checkCount + 1;
+      setCheckCount(newCount);
+      localStorage.setItem('checkCount', newCount.toString());
+
     } catch (e: any) {
       setErr(e?.message ?? "Failed to load");
       setRows(null);
@@ -112,7 +134,7 @@ export default function CheckPage() {
             </span>
           </Link>
 
-             <nav className="flex items-center gap-6 text-sm text-gray-700">
+          <nav className="flex items-center gap-6 text-sm text-gray-700">
             <Link href="/check" className="hover:text-[#1a202c]">
               Checker
             </Link>
@@ -137,7 +159,7 @@ export default function CheckPage() {
               STR Zone • Legality Checker
             </p>
             <h1 className="mt-3 text-3xl font-semibold md:text-4xl text-[#1a202c]">
-              Instantly check if your Airbnb is legal|before you get fined.
+              Instantly check if your Airbnb is legal before you get fined.
             </h1>
             <p className="mt-3 text-sm md:text-base text-gray-600">
               Type any address or city and see whether short-term rentals are
@@ -147,9 +169,15 @@ export default function CheckPage() {
 
             {/* search box */}
             <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-              <label className="block text-sm font-medium text-gray-700">
-                Address or City
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Address or City
+                </label>
+                {/* NEW: Free checks counter */}
+                <span className="text-xs text-gray-500">
+                  {checkCount}/3 free checks used
+                </span>
+              </div>
               <div className="mt-2 flex flex-col gap-2 sm:flex-row">
                 <input
                   value={query}
@@ -161,7 +189,7 @@ export default function CheckPage() {
                   onClick={loadRules}
                   className="rounded-xl bg-[#3b82f6] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition"
                 >
-                  Check your city (free)
+                  Check your city {checkCount < 3 ? "(free)" : ""}
                 </button>
               </div>
 
@@ -199,10 +227,11 @@ export default function CheckPage() {
                 Turn quick checks into a real STR compliance system.
               </p>
               <ul className="mt-3 space-y-2 text-sm text-gray-600">
+                <li>• Unlimited city checks</li>
+                <li>• Compare multiple cities side-by-side</li>
                 <li>• Save your watched cities in one place</li>
                 <li>• Get rule-change alerts before they hit your listing</li>
                 <li>• Access permit checklists and notes by city</li>
-                <li>• Export details to share with partners or clients</li>
               </ul>
               <Link
                 href="/pricing"
@@ -213,6 +242,40 @@ export default function CheckPage() {
             </div>
           </section>
         </div>
+
+        {/* NEW: Paywall Modal */}
+        {showPaywall && (
+          <section className="mt-8">
+            <div className="rounded-2xl border-2 border-[#3b82f6] bg-blue-50 p-8 shadow-lg">
+              <h2 className="text-xl font-semibold text-[#1a202c]">
+                You've used your 3 free checks
+              </h2>
+              <p className="mt-2 text-gray-700">
+                Upgrade to <span className="font-semibold">Basic ($9.99/month)</span> to get:
+              </p>
+              <ul className="mt-3 space-y-2 text-sm text-gray-700">
+                <li>✓ Unlimited city checks</li>
+                <li>✓ Compare up to 3 cities side-by-side</li>
+                <li>✓ Save 5 watched cities</li>
+                <li>✓ Full regulation details</li>
+              </ul>
+              <div className="mt-6 flex gap-3">
+                <Link
+                  href="/pricing"
+                  className="rounded-xl bg-[#3b82f6] px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition"
+                >
+                  Upgrade to Basic
+                </Link>
+                <button
+                  onClick={() => setShowPaywall(false)}
+                  className="rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Maybe later
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Why this matters */}
         <section className="mt-10 text-sm text-gray-600">
@@ -347,7 +410,6 @@ export default function CheckPage() {
                   </div>
                 </div>
 
-                {/* Your existing email capture – just make sure its copy matches our promise */}
                 <EmailCapture city={resolvedCity || match.jurisdiction_name} />
 
                 {/* PRO upsell under results */}
@@ -370,7 +432,7 @@ export default function CheckPage() {
 
             {!loading && rows && rows.length === 0 && (
               <div className="rounded-lg border bg-white p-4 text-sm text-gray-700 shadow-sm">
-                API returned 0 rows. That means your sheet filter didn’t match
+                API returned 0 rows. That means your sheet filter didn't match
                 anything.
               </div>
             )}
@@ -379,4 +441,4 @@ export default function CheckPage() {
       </main>
     </div>
   );
-}
+} 
