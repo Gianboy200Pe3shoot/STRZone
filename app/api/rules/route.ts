@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 export async function POST() {
   return NextResponse.json(
     { error: "Not Found" },
@@ -16,6 +17,7 @@ type RuleRow = {
   cap_or_limit?: string;
   taxes?: string;
   notes?: string;
+  permit_checklist?: string;
   source_url?: string;
   last_verified?: string;
 };
@@ -139,22 +141,21 @@ export async function GET(req: Request) {
       cap_or_limit: get(row, "cap_or_limit"),
       taxes: get(row, "taxes"),
       notes: get(row, "notes"),
+      permit_checklist: get(row, "permit_checklist"),
       source_url: get(row, "source_url"),
       last_verified: get(row, "last_verified"),
     }));
 
     // Filter by city (exact match)
-      const rowsOut = qCity
-  ? rows.filter((r) => normalize(r.jurisdiction_name) === qCity)
-  : rows;
-
-
+    const rowsOut = qCity
+      ? rows.filter((r) => normalize(r.jurisdiction_name) === qCity)
+      : rows;
 
     return NextResponse.json({
-  rows: rowsOut,          // ALWAYS an array
-  total: rowsOut.length, // matches returned rows
-  city: cityRaw|| null,
-});
+      rows: rowsOut,
+      total: rowsOut.length,
+      city: cityRaw || null,
+    });
   } catch (e: any) {
     return NextResponse.json(
       { error: e?.message ?? "Unknown error" },
