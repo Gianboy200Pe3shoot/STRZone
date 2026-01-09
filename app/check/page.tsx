@@ -50,7 +50,7 @@ export default function CheckPage() {
   const { saveCity, isCitySaved, savedCities } = useSavedCities();
 
   useEffect(() => {
-    const count = parseInt(localStorage.getItem('checkCount') || '0');
+    const count = parseInt(localStorage.getItem("checkCount") || "0");
     setCheckCount(count);
   }, []);
 
@@ -97,8 +97,7 @@ export default function CheckPage() {
 
       const newCount = checkCount + 1;
       setCheckCount(newCount);
-      localStorage.setItem('checkCount', newCount.toString());
-
+      localStorage.setItem("checkCount", newCount.toString());
     } catch (e: any) {
       setErr(e?.message ?? "Failed to load");
       setRows(null);
@@ -121,7 +120,7 @@ export default function CheckPage() {
 
   const handleSaveCity = () => {
     if (!cityName || !match) return;
-    
+
     const success = saveCity({
       name: cityName,
       status: label,
@@ -165,6 +164,9 @@ export default function CheckPage() {
             <Link href="/pricing" className="hover:text-[#1a202c]">
               Pricing
             </Link>
+            <Link href="/login" className="hover:text-[#1a202c]">
+              Login
+            </Link>
             <a href="#how-it-works" className="hover:text-[#1a202c]">
               How it works
             </a>
@@ -175,10 +177,22 @@ export default function CheckPage() {
       {showSaveSuccess && (
         <div className="fixed top-20 right-4 z-50 rounded-xl bg-green-50 border border-green-200 px-4 py-3 shadow-lg animate-in slide-in-from-top">
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <svg
+              className="w-5 h-5 text-green-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
-            <span className="text-sm font-medium text-green-800">City saved successfully!</span>
+            <span className="text-sm font-medium text-green-800">
+              City saved successfully!
+            </span>
           </div>
         </div>
       )}
@@ -211,7 +225,7 @@ export default function CheckPage() {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && loadRules()}
+                  onKeyDown={(e) => e.key === "Enter" && loadRules()}
                   className="w-full rounded-xl border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#3b82f6]"
                   placeholder="San Diego"
                 />
@@ -275,10 +289,12 @@ export default function CheckPage() {
           <section className="mt-8">
             <div className="rounded-2xl border-2 border-[#3b82f6] bg-blue-50 p-8 shadow-lg">
               <h2 className="text-xl font-semibold text-[#1a202c]">
-                You've used your 3 free checks
+                You&apos;ve used your 3 free checks
               </h2>
               <p className="mt-2 text-gray-700">
-                Upgrade to <span className="font-semibold">Basic ($9.99/month)</span> to get:
+                Upgrade to{" "}
+                <span className="font-semibold">Basic ($9.99/month)</span> to
+                get:
               </p>
               <ul className="mt-3 space-y-2 text-sm text-gray-700">
                 <li>✓ Unlimited city checks</li>
@@ -312,9 +328,9 @@ export default function CheckPage() {
             Cities are cracking down on illegal short-term rentals. Many hosts
             don&apos;t realize their city requires permits, primary-residence
             rules, or strict caps until they receive a notice or their listing
-            gets removed. STR Zone helps you understand the rules <span className="font-semibold">before</span>{" "}
-            you buy or list, so you can protect your cashflow and avoid
-            expensive surprises.
+            gets removed. STR Zone helps you understand the rules{" "}
+            <span className="font-semibold">before</span> you buy or list, so
+            you can protect your cashflow and avoid expensive surprises.
           </p>
         </section>
 
@@ -397,11 +413,11 @@ export default function CheckPage() {
                         disabled={isSaved}
                         className={`rounded-xl px-4 py-1.5 text-xs font-semibold transition ${
                           isSaved
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-[#3b82f6] text-white hover:bg-[#2563eb]'
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "bg-[#3b82f6] text-white hover:bg-[#2563eb]"
                         }`}
                       >
-                        {isSaved ? '✓ Saved' : 'Save City'}
+                        {isSaved ? "✓ Saved" : "Save City"}
                       </button>
                     </div>
                   </div>
@@ -437,8 +453,18 @@ export default function CheckPage() {
                     {match.permit_checklist && (
                       <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-4">
                         <h3 className="text-sm font-semibold text-[#1a202c] flex items-center gap-2">
-                          <svg className="w-4 h-4 text-[#3b82f6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          <svg
+                            className="w-4 h-4 text-[#3b82f6]"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                            />
                           </svg>
                           Permit Checklist
                         </h3>
@@ -461,7 +487,9 @@ export default function CheckPage() {
                   </div>
                 </div>
 
-                <EmailCapture city={resolvedCity || match.jurisdiction_name} />
+                <EmailCapture
+                  city={resolvedCity || match.jurisdiction_name}
+                />
 
                 <p className="mt-4 text-xs text-gray-600">
                   Manage more than one property or market? Get rule-change
@@ -482,8 +510,8 @@ export default function CheckPage() {
 
             {!loading && rows && rows.length === 0 && (
               <div className="rounded-lg border bg-white p-4 text-sm text-gray-700 shadow-sm">
-                API returned 0 rows. That means your sheet filter didn't match
-                anything.
+                API returned 0 rows. That means your sheet filter didn&apos;t
+                match anything.
               </div>
             )}
           </div>
