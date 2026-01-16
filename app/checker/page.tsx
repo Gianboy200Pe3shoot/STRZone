@@ -150,6 +150,9 @@ export default function CheckPage() {
             <Link href="/check" className="hover:text-[#1a202c]">
               Checker
             </Link>
+            <Link href="/analyzer" className="hover:text-[#1a202c]">
+  AI Optimizer
+</Link>
             <Link href="/compare" className="hover:text-[#1a202c]">
               Compare
             </Link>
