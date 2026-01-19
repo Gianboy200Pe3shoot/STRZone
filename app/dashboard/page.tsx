@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Building2, Home, Wrench, Users, Plus, LogOut, AlertCircle, Clock, CheckCircle } from 'lucide-react';
+import { Building2, Home, Wrench, Users, Plus, LogOut, AlertCircle, Clock, CheckCircle, Calendar } from 'lucide-react';
 import { supabase } from '../../lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import CleaningScheduler from '../components/CleaningScheduler';
 
 // Add Property Modal
 function AddPropertyModal({ isOpen, onClose, onSuccess, userId }) {
@@ -236,6 +237,7 @@ export default function Dashboard() {
         <nav className="flex-1 p-4 space-y-2">
           <button onClick={() => setActiveTab('overview')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'overview' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><Home className="w-5 h-5" /><span className="font-medium">Overview</span></button>
           <button onClick={() => setActiveTab('properties')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'properties' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><Building2 className="w-5 h-5" /><span className="font-medium">Properties</span></button>
+          <button onClick={() => setActiveTab('cleanings')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'cleanings' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><Calendar className="w-5 h-5" /><span className="font-medium">Cleanings</span></button>
           <button onClick={() => setActiveTab('maintenance')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'maintenance' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><Wrench className="w-5 h-5" /><span className="font-medium">Maintenance</span></button>
           <button onClick={() => setActiveTab('tenants')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'tenants' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><Users className="w-5 h-5" /><span className="font-medium">Tenants</span></button>
         </nav>
@@ -245,7 +247,13 @@ export default function Dashboard() {
       {/* Main */}
       <div className="flex-1 overflow-auto p-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">{activeTab === 'overview' && 'Dashboard Overview'}{activeTab === 'properties' && 'Properties'}{activeTab === 'maintenance' && 'Maintenance Requests'}{activeTab === 'tenants' && 'Tenants'}</h2>
+          <h2 className="text-3xl font-bold mb-2">
+            {activeTab === 'overview' && 'Dashboard Overview'}
+            {activeTab === 'properties' && 'Properties'}
+            {activeTab === 'cleanings' && 'Cleaning Schedule'}
+            {activeTab === 'maintenance' && 'Maintenance Requests'}
+            {activeTab === 'tenants' && 'Tenants'}
+          </h2>
           <p className="text-gray-600">Welcome back, {user?.email}</p>
         </div>
 
@@ -279,6 +287,10 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+        )}
+
+        {activeTab === 'cleanings' && (
+          <CleaningScheduler userId={user?.id} properties={properties} />
         )}
 
         {activeTab === 'maintenance' && (
