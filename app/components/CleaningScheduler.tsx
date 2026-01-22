@@ -4,8 +4,13 @@ import { useState, useEffect } from 'react';
 import { Calendar, Plus, CheckCircle, Clock, User, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase/client';
 
-// Add Cleaning Modal
-function AddCleaningModal({ isOpen, onClose, onSuccess, userId, properties }) {
+function AddCleaningModal({ isOpen, onClose, onSuccess, userId, properties }: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  userId: string;
+  properties: any[];
+}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
@@ -44,10 +49,37 @@ function AddCleaningModal({ isOpen, onClose, onSuccess, userId, properties }) {
 
       if (insertError) throw insertError;
 
+      if (formData.cleaner_phone) {
+        try {
+          const propertyName = properties.find(p => p.id === formData.property_id)?.name || 'Property';
+          const formattedDate = new Date(formData.checkout_date).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+          });
+
+          await fetch('/api/send-sms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: formData.cleaner_phone,
+              propertyName: propertyName + (formData.unit_name ? ` - ${formData.unit_name}` : ''),
+              date: formattedDate,
+              time: formData.checkout_time,
+              cleanerName: formData.cleaner_name
+            })
+          });
+          
+          console.log('SMS sent to cleaner');
+        } catch (smsError) {
+          console.error('SMS failed but cleaning was scheduled:', smsError);
+        }
+      }
+
       setFormData({ property_id: '', unit_name: '', checkout_date: '', checkout_time: '11:00', cleaner_name: '', cleaner_phone: '', notes: '' });
       onSuccess();
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
@@ -131,14 +163,15 @@ function AddCleaningModal({ isOpen, onClose, onSuccess, userId, properties }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Cleaner Phone</label>
+            <label className="block text-sm font-medium mb-2">Cleaner Phone (for SMS)</label>
             <input 
               type="tel" 
               value={formData.cleaner_phone}
               onChange={(e) => setFormData({ ...formData, cleaner_phone: e.target.value })}
-              placeholder="(555) 123-4567"
+              placeholder="+12135551234"
               className="w-full px-4 py-3 border rounded-lg"
             />
+            <p className="text-xs text-gray-500 mt-1">Format: +1XXXXXXXXXX</p>
           </div>
 
           <div>
@@ -173,12 +206,14 @@ function AddCleaningModal({ isOpen, onClose, onSuccess, userId, properties }) {
   );
 }
 
-// Main Cleaning Scheduler Component
-export default function CleaningScheduler({ userId, properties }) {
+export default function CleaningScheduler({ userId, properties }: {
+  userId: string;
+  properties: any[];
+}) {
   const [cleanings, setCleanings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [filter, setFilter] = useState('all'); // all, scheduled, completed
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
     loadCleanings();
@@ -198,7 +233,7 @@ export default function CleaningScheduler({ userId, properties }) {
     setLoading(false);
   };
 
-  const updateStatus = async (cleaningId, newStatus) => {
+  const updateStatus = async (cleaningId: string, newStatus: string) => {
     await supabase
       .from('cleanings')
       .update({ status: newStatus })
@@ -207,21 +242,17 @@ export default function CleaningScheduler({ userId, properties }) {
     loadCleanings();
   };
 
-  const filteredCleanings = cleanings.filter(c => {
+  const filteredCleanings = cleanings.filter((c: any) => {
     if (filter === 'all') return true;
     return c.status === filter;
   });
 
-  const upcomingCleanings = filteredCleanings.filter(c => 
-    new Date(c.checkout_date) >= new Date() && c.status === 'scheduled'
-  );
-
-  const todayCleanings = filteredCleanings.filter(c => {
+  const todayCleanings = filteredCleanings.filter((c: any) => {
     const today = new Date().toISOString().split('T')[0];
     return c.checkout_date === today;
   });
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled': return 'bg-blue-100 text-blue-800';
       case 'in_progress': return 'bg-yellow-100 text-yellow-800';
@@ -231,7 +262,7 @@ export default function CleaningScheduler({ userId, properties }) {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'scheduled': return <Clock className="w-5 h-5 text-blue-600" />;
       case 'in_progress': return <Clock className="w-5 h-5 text-yellow-600" />;
@@ -254,7 +285,6 @@ export default function CleaningScheduler({ userId, properties }) {
         properties={properties}
       />
 
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold">Cleaning Schedule</h2>
@@ -269,7 +299,6 @@ export default function CleaningScheduler({ userId, properties }) {
         </button>
       </div>
 
-      {/* Filter Tabs */}
       <div className="flex gap-2 border-b">
         <button 
           onClick={() => setFilter('all')}
@@ -289,7 +318,7 @@ export default function CleaningScheduler({ userId, properties }) {
               : 'border-transparent text-gray-600 hover:text-gray-900'
           }`}
         >
-          Scheduled ({cleanings.filter(c => c.status === 'scheduled').length})
+          Scheduled ({cleanings.filter((c: any) => c.status === 'scheduled').length})
         </button>
         <button 
           onClick={() => setFilter('completed')}
@@ -299,11 +328,10 @@ export default function CleaningScheduler({ userId, properties }) {
               : 'border-transparent text-gray-600 hover:text-gray-900'
           }`}
         >
-          Completed ({cleanings.filter(c => c.status === 'completed').length})
+          Completed ({cleanings.filter((c: any) => c.status === 'completed').length})
         </button>
       </div>
 
-      {/* Today's Cleanings */}
       {todayCleanings.length > 0 && (
         <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
           <h3 className="text-lg font-bold text-orange-900 mb-4 flex items-center gap-2">
@@ -311,7 +339,7 @@ export default function CleaningScheduler({ userId, properties }) {
             Today's Cleanings ({todayCleanings.length})
           </h3>
           <div className="space-y-3">
-            {todayCleanings.map(cleaning => (
+            {todayCleanings.map((cleaning: any) => (
               <div key={cleaning.id} className="bg-white p-4 rounded-lg border border-orange-200">
                 <div className="flex justify-between items-start">
                   <div>
@@ -345,7 +373,6 @@ export default function CleaningScheduler({ userId, properties }) {
         </div>
       )}
 
-      {/* All Cleanings List */}
       {filteredCleanings.length === 0 ? (
         <div className="bg-white p-12 rounded-xl border text-center">
           <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -360,7 +387,7 @@ export default function CleaningScheduler({ userId, properties }) {
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredCleanings.map(cleaning => (
+          {filteredCleanings.map((cleaning: any) => (
             <div key={cleaning.id} className="bg-white p-6 rounded-xl border hover:shadow-lg transition">
               <div className="flex justify-between items-start">
                 <div className="flex gap-4">

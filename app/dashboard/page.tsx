@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Building2, Home, Wrench, Users, Plus, LogOut, AlertCircle, Clock, CheckCircle, Calendar } from 'lucide-react';
+import { Building2, Home, Wrench, Users, Plus, LogOut, AlertCircle, Clock, CheckCircle, Calendar, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import CleaningScheduler from '../components/CleaningScheduler';
+import RevenueDashboard from '../components/RevenueDashboard';
 
 // Add Property Modal
 function AddPropertyModal({ isOpen, onClose, onSuccess, userId }) {
@@ -239,6 +240,7 @@ export default function Dashboard() {
           <button onClick={() => setActiveTab('properties')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'properties' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><Building2 className="w-5 h-5" /><span className="font-medium">Properties</span></button>
           <button onClick={() => setActiveTab('cleanings')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'cleanings' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><Calendar className="w-5 h-5" /><span className="font-medium">Cleanings</span></button>
           <button onClick={() => setActiveTab('maintenance')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'maintenance' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><Wrench className="w-5 h-5" /><span className="font-medium">Maintenance</span></button>
+          <button onClick={() => setActiveTab('revenue')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'revenue' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><DollarSign className="w-5 h-5" /><span className="font-medium">Revenue</span></button>
           <button onClick={() => setActiveTab('tenants')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${activeTab === 'tenants' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}><Users className="w-5 h-5" /><span className="font-medium">Tenants</span></button>
         </nav>
         <div className="p-4 border-t"><button onClick={async () => { await supabase.auth.signOut(); router.push('/login'); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50"><LogOut className="w-5 h-5" /><span className="font-medium">Logout</span></button></div>
@@ -252,6 +254,7 @@ export default function Dashboard() {
             {activeTab === 'properties' && 'Properties'}
             {activeTab === 'cleanings' && 'Cleaning Schedule'}
             {activeTab === 'maintenance' && 'Maintenance Requests'}
+            {activeTab === 'revenue' && 'Revenue Dashboard'}
             {activeTab === 'tenants' && 'Tenants'}
           </h2>
           <p className="text-gray-600">Welcome back, {user?.email}</p>
@@ -291,6 +294,10 @@ export default function Dashboard() {
 
         {activeTab === 'cleanings' && (
           <CleaningScheduler userId={user?.id} properties={properties} />
+        )}
+
+        {activeTab === 'revenue' && (
+          <RevenueDashboard userId={user?.id} properties={properties} />
         )}
 
         {activeTab === 'maintenance' && (
