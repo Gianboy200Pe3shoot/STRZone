@@ -160,7 +160,7 @@ function UploadRevenueModal({ isOpen, onClose, onSuccess, userId, properties }) 
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700">Net Profit:</span>
                 <span className="text-2xl font-bold text-green-600">
-                  ${(parseFloat(formData.total_revenue || 0) - parseFloat(formData.total_expenses || 0)).toFixed(2)}
+                  ${(parseFloat(formData.total_revenue || '0') - parseFloat(formData.total_expenses || '0')).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -356,32 +356,32 @@ export default function RevenueDashboard({ userId, properties }) {
         </div>
       </div>
 
-      {/* Revenue by Property */}
+{/* Revenue by Property */}
       {Object.keys(revenueByProperty).length > 0 && (
         <div className="bg-white p-6 rounded-xl border">
           <h3 className="text-xl font-bold mb-4">Revenue by Property</h3>
           <div className="space-y-4">
-            {Object.entries(revenueByProperty).map(([propName, data]) => (
+            {Object.entries(revenueByProperty).map(([propName, data]: [string, any]) => (
               <div key={propName} className="border-b pb-4 last:border-b-0">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-semibold text-gray-900">{propName}</h4>
-                  <span className={`text-lg font-bold ${data.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    ${data.profit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  <span className={`text-lg font-bold ${(data as any).profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    ${((data as any).profit).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600">Revenue:</span>
-                    <span className="ml-2 font-medium">${data.revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="ml-2 font-medium">${(data as any).revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div>
                     <span className="text-gray-600">Expenses:</span>
-                    <span className="ml-2 font-medium">${data.expenses.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="ml-2 font-medium">${(data as any).expenses.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div>
                     <span className="text-gray-600">Margin:</span>
                     <span className="ml-2 font-medium">
-                      {data.revenue > 0 ? ((data.profit / data.revenue) * 100).toFixed(1) : 0}%
+                      {(data as any).revenue > 0 ? (((data as any).profit / (data as any).revenue) * 100).toFixed(1) : 0}%
                     </span>
                   </div>
                 </div>
