@@ -78,7 +78,7 @@ export default function ComparePage() {
       {/* Top nav */}
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Link href="/check" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <span className="rounded-md bg-[#1a202c] px-2 py-1 text-xs font-semibold text-white">
               STR
             </span>
@@ -88,14 +88,20 @@ export default function ComparePage() {
           </Link>
 
           <nav className="flex items-center gap-6 text-sm text-gray-700">
-            <Link href="/check" className="hover:text-[#1a202c]">
-              Checker
+            <Link href="/checker" className="hover:text-[#1a202c]">
+              Free Checker
             </Link>
             <Link href="/compare" className="font-semibold text-[#1a202c]">
               Compare
             </Link>
-            <Link href="/pricing" className="hover:text-[#1a202c]">
-              Pricing
+            <Link href="/my-cities" className="hover:text-[#1a202c]">
+              My Cities
+            </Link>
+            <Link href="/property-management" className="hover:text-[#1a202c]">
+              Property Management
+            </Link>
+            <Link href="/login" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold">
+              Login
             </Link>
           </nav>
         </div>
@@ -310,19 +316,19 @@ export default function ComparePage() {
               </div>
             )}
 
-            {/* PRO upsell */}
-            <section className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-6">
+            {/* Property Management upsell */}
+            <section className="mt-8 rounded-2xl border-2 border-indigo-200 bg-indigo-50 p-6">
               <h3 className="text-lg font-semibold text-[#1a202c]">
-                Need more advanced comparisons?
+                Managing properties in multiple cities?
               </h3>
-              <p className="mt-2 text-sm text-gray-600">
-                PRO members can export comparison tables, get alerts when any city's regulations change, and access detailed permit checklists.
+              <p className="mt-2 text-sm text-gray-700">
+                Our Property Management Dashboard helps you track revenue, schedule cleanings, and get AI assistance for maintenance issues across all your properties.
               </p>
               <Link
-                href="/pricing"
-                className="mt-4 inline-flex items-center justify-center rounded-xl bg-[#3b82f6] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition"
+                href="/property-management"
+                className="mt-4 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition"
               >
-                View PRO plans →
+                Learn about Property Management →
               </Link>
             </section>
           </>

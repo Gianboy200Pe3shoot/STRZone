@@ -18,10 +18,10 @@ export default function HomePage() {
           </div>
           <div className="flex gap-6 items-center">
             <Link href="/checker" className="text-gray-700 hover:text-gray-900 font-medium">
-              Legality Checker
+              Free Checker
             </Link>
-            <Link href="/pricing" className="text-gray-700 hover:text-gray-900 font-medium">
-              Pricing
+            <Link href="/property-management" className="text-gray-700 hover:text-gray-900 font-medium">
+              Features & Pricing
             </Link>
             <Link href="/login" className="px-6 py-2 text-indigo-600 hover:text-indigo-700 font-semibold border-2 border-indigo-600 rounded-lg">
               Sign In
@@ -67,7 +67,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-200 shadow-sm">
                   <Users className="w-4 h-4 text-indigo-600" />
-                  <span className="text-sm font-medium">Team Management</span>
+                  <span className="text-sm font-medium">AI Assistant</span>
                 </div>
               </div>
 
@@ -186,7 +186,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Cleaning Scheduler</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Automatically schedule cleanings after checkouts. Assign cleaners, send SMS reminders, track completion.
+                Automatically schedule cleanings after checkouts. Assign cleaners, send reminders, track completion.
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start gap-2">
@@ -195,7 +195,7 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Auto-SMS to cleaners</span>
+                  <span>Cleaner assignment</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -236,12 +236,12 @@ export default function HomePage() {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Revenue Dashboard</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Upload monthly CSVs from Airbnb/VRBO. See total revenue, expenses, and profit per property.
+                Track revenue and expenses. See total profit per property with simple charts and summaries.
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>CSV import</span>
+                  <span>Manual entry</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -254,27 +254,27 @@ export default function HomePage() {
               </ul>
             </div>
 
-            {/* Feature 4 - Team Management */}
+            {/* Feature 4 - AI Assistant */}
             <div className="p-8 rounded-2xl border-2 border-gray-100 hover:border-indigo-200 transition-all hover:shadow-xl bg-white">
               <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
                 <Users className="w-8 h-8 text-purple-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Team Management</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">AI Assistant</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Add cleaners, contractors, co-hosts. Set permissions. Track their tasks and performance.
+                Ask questions about maintenance issues and get instant advice on urgency, costs, and action plans.
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Role-based access</span>
+                  <span>Instant answers</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Task assignment</span>
+                  <span>Cost estimates</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>Performance tracking</span>
+                  <span>Action plans</span>
                 </li>
               </ul>
             </div>
@@ -298,8 +298,8 @@ export default function HomePage() {
                 <div className="text-gray-600">Hours Saved per Week</div>
               </div>
               <div className="bg-white p-8 rounded-2xl shadow-lg">
-                <div className="text-4xl font-bold text-indigo-600 mb-2">$67</div>
-                <div className="text-gray-600">Flat Monthly Price</div>
+                <div className="text-4xl font-bold text-indigo-600 mb-2">$47</div>
+                <div className="text-gray-600">per Month</div>
               </div>
               <div className="bg-white p-8 rounded-2xl shadow-lg">
                 <div className="text-4xl font-bold text-indigo-600 mb-2">∞</div>
@@ -343,13 +343,13 @@ export default function HomePage() {
               <span className="text-xl font-bold text-white">STR Zone</span>
             </div>
             <div className="flex gap-8 text-sm">
-              <Link href="/checker" className="hover:text-white transition">Legality Checker</Link>
-              <Link href="/pricing" className="hover:text-white transition">Pricing</Link>
+              <Link href="/checker" className="hover:text-white transition">Free Checker</Link>
+              <Link href="/property-management" className="hover:text-white transition">Property Management</Link>
               <Link href="/login" className="hover:text-white transition">Login</Link>
             </div>
           </div>
           <div className="text-center text-xs mt-8 pt-8 border-t border-gray-800">
-            © 2025 STR Zone. All rights reserved.
+            © 2026 STR Zone. All rights reserved.
           </div>
         </div>
       </footer>
