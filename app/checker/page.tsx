@@ -1,7 +1,7 @@
-// app/check/page.tsx - UPDATED with Save City feature
+// app/checker/page.tsx - FREE UNLIMITED VERSION
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSavedCities } from "../hooks/useSavedCities";
 import EmailCapture from "../components/EmailCapture";
@@ -16,7 +16,7 @@ type RuleRow = {
   cap_or_limit?: string;
   taxes?: string;
   notes?: string;
-  permit_checklist?: string; // NEW FIELD
+  permit_checklist?: string;
   source_url?: string;
   last_verified?: string;
 };
@@ -43,23 +43,11 @@ export default function CheckPage() {
   const [rows, setRows] = useState<RuleRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [checkCount, setCheckCount] = useState(0);
-  const [showPaywall, setShowPaywall] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
   const { saveCity, isCitySaved, savedCities } = useSavedCities();
 
-  useEffect(() => {
-    const count = parseInt(localStorage.getItem("checkCount") || "0");
-    setCheckCount(count);
-  }, []);
-
   async function loadRules() {
-    if (checkCount >= 3) {
-      setShowPaywall(true);
-      return;
-    }
-
     setLoading(true);
     setErr(null);
 
@@ -94,10 +82,6 @@ export default function CheckPage() {
         : [];
 
       setRows(list);
-
-      const newCount = checkCount + 1;
-      setCheckCount(newCount);
-      localStorage.setItem("checkCount", newCount.toString());
     } catch (e: any) {
       setErr(e?.message ?? "Failed to load");
       setRows(null);
@@ -137,7 +121,7 @@ export default function CheckPage() {
     <div className="min-h-screen bg-gradient-to-b from-[#f3f4f6] to-white text-[#1a202c]">
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Link href="/check" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <span className="rounded-md bg-[#1a202c] px-2 py-1 text-xs font-semibold text-white">
               STR
             </span>
@@ -147,12 +131,9 @@ export default function CheckPage() {
           </Link>
 
           <nav className="flex items-center gap-6 text-sm text-gray-700">
-            <Link href="/check" className="hover:text-[#1a202c]">
-              Checker
+            <Link href="/checker" className="hover:text-[#1a202c] font-semibold">
+              Free Checker
             </Link>
-            <Link href="/analyzer" className="hover:text-[#1a202c]">
-  AI Optimizer
-</Link>
             <Link href="/compare" className="hover:text-[#1a202c]">
               Compare
             </Link>
@@ -164,15 +145,12 @@ export default function CheckPage() {
                 </span>
               )}
             </Link>
-            <Link href="/pricing" className="hover:text-[#1a202c]">
-              Pricing
+            <Link href="/property-management" className="hover:text-[#1a202c]">
+              Property Management
             </Link>
-            <Link href="/login" className="hover:text-[#1a202c]">
+            <Link href="/login" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold">
               Login
             </Link>
-            <a href="#how-it-works" className="hover:text-[#1a202c]">
-              How it works
-            </a>
           </nav>
         </div>
       </header>
@@ -204,7 +182,7 @@ export default function CheckPage() {
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <section>
             <p className="text-xs font-semibold uppercase tracking-wide text-[#3b82f6]">
-              STR Zone • Legality Checker
+              STR Zone • Free Legality Checker
             </p>
             <h1 className="mt-3 text-3xl font-semibold md:text-4xl text-[#1a202c]">
               Instantly check if your Airbnb is legal before you get fined.
@@ -220,8 +198,8 @@ export default function CheckPage() {
                 <label className="block text-sm font-medium text-gray-700">
                   Address or City
                 </label>
-                <span className="text-xs text-gray-500">
-                  {checkCount}/3 free checks used
+                <span className="text-xs font-semibold text-green-600">
+                  ✓ Unlimited free checks
                 </span>
               </div>
               <div className="mt-2 flex flex-col gap-2 sm:flex-row">
@@ -236,7 +214,7 @@ export default function CheckPage() {
                   onClick={loadRules}
                   className="rounded-xl bg-[#3b82f6] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition whitespace-nowrap"
                 >
-                  Check City {checkCount < 3 ? "(free)" : ""}
+                  Check City (Free)
                 </button>
               </div>
 
@@ -267,61 +245,28 @@ export default function CheckPage() {
           </section>
 
           <section className="hidden md:block">
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <p className="text-sm font-semibold text-[#1a202c]">
-                Turn quick checks into a real STR compliance system.
+            <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50 p-6 shadow-sm">
+              <p className="text-lg font-bold text-[#1a202c] mb-2">
+                Manage Multiple Properties?
               </p>
-              <ul className="mt-3 space-y-2 text-sm text-gray-600">
-                <li>• Unlimited city checks</li>
-                <li>• Compare multiple cities side-by-side</li>
-                <li>• Save your watched cities in one place</li>
-                <li>• Get rule-change alerts before they hit your listing</li>
-                <li>• Access permit checklists and notes by city</li>
+              <p className="text-sm text-gray-700 mb-4">
+                Try our AI-powered Property Management Dashboard
+              </p>
+              <ul className="space-y-2 text-sm text-gray-700 mb-4">
+                <li>• AI assistant for maintenance issues</li>
+                <li>• Revenue tracking & reports</li>
+                <li>• Cleaning scheduler</li>
+                <li>• Automated reminders</li>
               </ul>
               <Link
-                href="/pricing"
-                className="mt-4 inline-flex items-center justify-center rounded-xl bg-[#3b82f6] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition"
+                href="/property-management"
+                className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition w-full"
               >
-                View PRO plans
+                Learn More →
               </Link>
             </div>
           </section>
         </div>
-
-        {showPaywall && (
-          <section className="mt-8">
-            <div className="rounded-2xl border-2 border-[#3b82f6] bg-blue-50 p-8 shadow-lg">
-              <h2 className="text-xl font-semibold text-[#1a202c]">
-                You&apos;ve used your 3 free checks
-              </h2>
-              <p className="mt-2 text-gray-700">
-                Upgrade to{" "}
-                <span className="font-semibold">Basic ($9.99/month)</span> to
-                get:
-              </p>
-              <ul className="mt-3 space-y-2 text-sm text-gray-700">
-                <li>✓ Unlimited city checks</li>
-                <li>✓ Compare up to 5 cities side-by-side</li>
-                <li>✓ Save unlimited cities</li>
-                <li>✓ Full regulation details</li>
-              </ul>
-              <div className="mt-6 flex gap-3">
-                <Link
-                  href="/pricing"
-                  className="rounded-xl bg-[#3b82f6] px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#2563eb] transition"
-                >
-                  Upgrade to Basic
-                </Link>
-                <button
-                  onClick={() => setShowPaywall(false)}
-                  className="rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
-                >
-                  Maybe later
-                </button>
-              </div>
-            </div>
-          </section>
-        )}
 
         <section className="mt-10 text-sm text-gray-600">
           <h2 className="text-base font-semibold text-[#1a202c]">
@@ -494,20 +439,21 @@ export default function CheckPage() {
                   city={resolvedCity || match.jurisdiction_name}
                 />
 
-                <p className="mt-4 text-xs text-gray-600">
-                  Manage more than one property or market? Get rule-change
-                  alerts and permit checklists for{" "}
-                  <span className="font-semibold">
-                    {resolvedCity || match.jurisdiction_name}
-                  </span>{" "}
-                  and other cities with{" "}
-                  <Link
-                    href="/pricing"
-                    className="font-semibold text-[#3b82f6] underline"
-                  >
-                    STR Zone PRO →
-                  </Link>
-                </p>
+                <div className="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                  <p className="text-sm text-gray-700">
+                    Managing properties in{" "}
+                    <span className="font-semibold">
+                      {resolvedCity || match.jurisdiction_name}
+                    </span>
+                    ? Our Property Management Dashboard helps you track revenue, schedule cleanings, and get AI assistance for maintenance issues.{" "}
+                    <Link
+                      href="/property-management"
+                      className="font-semibold text-indigo-600 underline"
+                    >
+                      Learn more →
+                    </Link>
+                  </p>
+                </div>
               </>
             )}
 
